@@ -1,0 +1,126 @@
+{
+    "ctl_info":{
+        "meter_general_info": {
+            "leading_str": "FEFEFEFE68",
+            "iden_str": "1F90",
+            "end_bit" : "16",
+            "brand_str": "haiweici",
+            "meter_code_len": 10,
+            "meter_code_reverse":"true",
+			"meter_code_order" :"normal"
+        },
+        "meter_read_protocol": {
+            "data_structure": [
+                {
+                    "meter_type":1
+                },
+                {
+                    "meter_code":7
+                },
+                {
+                    "ctl_str":1
+                },
+                {
+                    "ctr_data":1
+                },
+                {
+                    "iden_str":3
+                },
+                {
+                    "settlement_heat":4
+                },
+                {
+                    "settlement_heat_unit":1
+                },
+                {
+                    "heat":4
+                },
+                {
+                    "heat_unit":1
+                },
+                {
+                    "heat_power":4
+                },
+                {
+                    "heatpower_unit":1
+                },
+                {
+                    "flow":4
+                },
+                {
+                    "flow_unit":1
+                },
+                {
+                    "accumflow":4
+                },
+                {
+                    "accumflow_unit":1
+                },
+                {
+                    "in_temp":3
+                },
+                {
+                    "out_temp":3
+                },
+                {
+                    "work_time":3
+                },
+                {
+                    "meter_time":7
+                },
+                {
+                    "status":2
+                },
+                {
+                    "parity_bit" : 1
+                },
+                {
+                    "end_bit" :1
+                }
+            ],
+            "data_precision": {
+                "settlement_heat": 0.01,
+                "heat": 0.01,
+                "heat_power": 0.01,
+                "flow": 0.0001,
+                "accumflow": 0.01,
+                "in_temp": 0.01,
+                "out_temp": 0.01,
+                "work_time": 1
+            },
+            "data_status_bits": {
+                "byte1": {
+                    "4": "电池欠压"
+                },
+                "byte2": {
+					"1": "进水口温度低于0ºC",
+                    "2": "进水口温度高于100ºC",
+                    "4": "出水口温度低于ºC",
+					"8": "出水口温度高于100ºC",
+					"16": "DAC校准失败",
+					"32": "流量过大",
+                    "64": "无流量"
+                }
+            },
+                "unit_dict": {
+                    "02": "Wh",
+                    "05": "kWh",
+                    "08": "MWh",
+                    "0A": "MWh*100",
+                    "01": "J",
+                    "0B": "KJ",
+                    "0E": "MJ",
+                    "11": "GJ",
+                    "13": "GJ*100",
+                    "14": "W",
+                    "17": "kW",
+                    "1A": "MW",
+                    "29": "L",
+                    "2C": "m3",
+                    "32": "L/h",
+                    "35": "m3/h"
+                    }
+        }
+    }
+
+}

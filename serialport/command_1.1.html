@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Ensaving-串口调试助手</title>
+    <LINK href="../image/bitbug_favicon.ico" type='image/x-icon' rel=icon>
+    <!--title显示图标-->
+    <script src='../js/jquery-1.9.1.js' type='text/javascript'></script>
+    <script src='../js/bootstrap.min.js'></script>
+    <script src='/socket.io/socket.io.js'></script>
+
+    <link rel='stylesheet' type="text/css" href='../css/bootstrap.min.css'>
+    <link rel='stylesheet' type="text/css" href='../css/serialport.css'>
+    <script type="text/javascript">
+        //ajax推送串口信息到服务器，用于打串口
+        function post_serial_info() {
+            com_num = $("#com_num").find("option:selected").val();//获取串口号
+            baudrate = $("#baudrate").find('option:selected').val();//获取波特率
+            databits = $("#databits").find('option:selected').val();//获取数据位
+            stopbits = $("#stopbits").find('option:selected').val();//获取停止位
+            parity = $("#parity").find('option:selected').val();//获取校验位字节数
+
+            var serial_info = {
+                com_num: com_num,
+                baudrate: baudrate,
+                databits: databits,
+                stopbits: stopbits,
+                parity: parity,
+                serial_flag: serial_flag
+            }
+            var JSON_serial = JSON.stringify(serial_info);  //将js对象转换成json格式数据
+            $.ajax({
+                type: 'post',
+                url: "command_1.1.html",
+                data: JSON_serial,
+                async: true,
+                // dataType: 'json',
+                success: function (data) {
+                    //alert(data);
+                },
+
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    // alert("Save error!" + XMLHttpRequest.status + " "  + XMLHttpRequest.readyState);
+                    alert("指令发送失败，请检查服务器是否运行正常！")
+                }
+            });
+
+            connect_toserver.emit('serial_info', serial_info);   //‘发送’ serial_info事件
+        }
+    </script>
+    <script type="text/javascript">
+        //ajax推送要发送的信息到服务器
+        function post_info() {
+            var data = {
+                auto_time: auto_time,
+                auto_send: auto_send,
+                command: command,
+                rec_setting: rec_setting,
+                send_setting: send_setting
+            };
+            var JSON_data = JSON.stringify(data);  //将js对象转换成json格式数据
+            $.ajax({
+                type: 'post',
+                url: "command_1.1.html",
+                data: JSON_data,
+                async: true,
+                // dataType: 'json',
+                success: function (data) {
+                    //alert(data);
+                },
+
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    // alert("Save error!" + XMLHttpRequest.status + " "  + XMLHttpRequest.readyState);
+                    alert("指令发送失败，请检查服务器是否运行正常！")
+                }
+            });
+            connect_toserver.emit('meterReading', data);   //‘发送’ meterReading事件
+        }
+    </script>
+    <script type="text/javascript">
+        var serial_flag = "close";           //串口状态标志位
+        function bnt_change(obj) {
+            if (obj.value == "打开串口") {
+                obj.value = "关闭串口";  //改变按钮显示内容
+                document.getElementById('serial_status_image').src =
+                        "../image/serial_run.png"; //改变显示的图片
+                serial_flag = "open";
+                post_serial_info();
+            }
+            else {
+                obj.value = "打开串口";
+                document.getElementById('serial_status_image').src = "../image/serial_stop.png";
+                serial_flag = "close";
+                post_serial_info();   //调用ajax推送
+            }
+        }
+
+        function img_change(id) {
+            if (document.getElementById(id).value == "打开串口") {
+                document.getElementById('serial_status_image').src =
+                        "../image/serial_stop.png"; //改变显示的图片
+            }
+            else {
+                document.getElementById('serial_status_image').src = "../image/serial_run.png";
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        $(function()
+        {
+            $('#set_change').click(function()
+            {
+                rec_setting = $("#rec_setting").find('option:selected').val();//获取接收编码
+                send_setting = $("#send_setting").find('option:selected').val();//获取发送编码
+                var encode_set = {
+                    rec_setting: rec_setting,
+                    send_setting: send_setting
+                };
+                var JSON_encode = JSON.stringify(encode_set);  //将js对象转换成json格式数据
+                $.ajax({
+                    type: 'post',
+                    url: "command_1.1.html",
+                    data: JSON_encode,
+                    async: true,
+                    // dataType: 'json',
+                    success: function (data) {
+                        // alert(data);
+                    },
+
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        // alert("Save error!" + XMLHttpRequest.status + " "  + XMLHttpRequest.readyState);
+                        alert("指令发送失败，请检查服务器是否运行正常！")
+                    }
+                });
+                connect_toserver.emit('encode_setting', encode_set);
+            })
+        });
+
+    </script>
+    <script>
+        var connect_toserver = io.connect("localhost:2212");
+        $(function () {    //这句必须要加，表示页面加载完毕。不加的话，数据不能提交 原因见笔记
+            $("#btn_start").click(function meterReading() {
+
+                /*--------------------—————获取页面的所有数据-start—————————————————————*/
+                auto_time = $("#auto_time").val();//获取发送间隔时间
+                auto_send = $("#auto_send").find('option:selected').val();//获取是否自动发送标志位
+                command = document.getElementById('command').value;   //获取指令
+                rec_setting = $("#rec_setting").find('option:selected').val();//获取接收编码
+                send_setting = $("#send_setting").find('option:selected').val();//获取发送编码
+                /*--------------------—————获取页面的所有数据-end—————————————————————*/
+
+                if (command == "") {
+                    alert("请输入发送指令");
+                }
+                else if (serial_flag == "close") {
+                    alert("请先打开串口");
+                }
+                else if ((auto_send == "auto_send_yes") && (auto_time == "")) {
+                    alert("请输入定时发送的时间");
+                }
+                else {
+                    post_info();//调用ajax推送
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        //接收串口数据，显示
+        function get_time() {
+            var hour = new Date().getHours();
+            var minut = new Date().getMinutes();
+            var sec = new Date().getSeconds();
+            return '[' + fnW(hour) + ':' + fnW(minut) + ':' + fnW(sec) + ']';
+        }
+        function fnW(str) {
+            var num;
+            str >= 10 ? num = str : num = "0" + str;
+            return num;
+        }
+
+        connect_toserver.on('data_to_web', function (data) {
+            var rec_setting = $("#rec_setting").find('option:selected').val();//获取接收编码
+            if (rec_setting == 'hex') {
+                document.getElementById('message').innerHTML += get_time() + data.toLocaleUpperCase() + '<br/>';
+            }
+            else {
+                document.getElementById('message').innerHTML += get_time() + data + '<br/>';
+            }
+        })
+        function clear_window() {
+            $('#message').empty();  //清空所有数据信息
+        }
+    </script>
+
+    <script type="text/javascript">
+        //接收串口信息,显示存在的串口号
+        connect_toserver.on('serials_to_web', function (data) {
+
+
+            if (data.length == 4) {
+                document.getElementById("com_num").options.add(new Option(data, data));
+            }
+        })
+
+    </script>
+    <script type="text/javascript">
+        connect_toserver.on('disconnect', function () {
+            document.getElementById('serial_open_close').value = "打开串口";
+            document.getElementById('serial_status_image').src = "../image/server_stop.png";
+            serial_flag = 'close';
+            document.getElementById('message').innerHTML += get_time() + '后台服务已关闭，请先打开服务' + '<br/>';
+        })
+    </script>
+</head>
+<body>
+<div>
+<div id="container">
+    <div id="body" class="container center-block">
+        <div class="center-block">
+            <div id="title">
+                <table>
+                    <tr>
+                        <div id="logo"><img src="../image/ensaving_logo.png"
+                                            style="height:25px;width:25px"/></div>
+                    </tr>
+                    <tr>
+                        <div id="company_name"><h3>基于Node.js--串口调试助手</h3></div>
+                    </tr>
+                </table>
+            </div>
+            <div id="option">
+                <table class="table table-bordered">
+                    <div class="nav">串口配置</div>
+                    <tr>
+                        <th>
+                            <div class="input-group">
+                                <span class="input-group-addon">串口号</span>
+                                <select class="form-control " id="com_num" data-size="5">
+
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <div class="input-group">
+                                <span class="input-group-addon">波特率</span>
+                                <select class="form-control" id="baudrate">
+                                    <option value="115200">115200</option>
+                                    <option value="57600">57600</option>
+                                    <option value="38400">38400</option>
+                                    <option value="19200">19200</option>
+                                    <option selected value="9600">9600</option>
+                                    <option value="4800">4800</option>
+                                    <option value="2400">2400</option>
+                                    <option value="1800">1800</option>
+                                    <option value="1200">1200</option>
+                                    <option value="600">600</option>
+                                    <option value="300">300</option>
+                                    <option value="200">200</option>
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <div class="input-group">
+                                <span class="input-group-addon">数据位</span>
+                                <select class="form-control" id="databits">
+                                    <option value="8">8</option>
+                                    <option value="7">7</option>
+                                    <option value="6">6</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <div class="input-group">
+                                <span class="input-group-addon">停止位</span>
+                                <select class="form-control" id="stopbits">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <div class="input-group">
+                                <span class="input-group-addon">校验位</span>
+                                <select class="form-control" id="parity">
+                                    <option value="none">None</option>
+                                    <option value="even">Even</option>
+                                    <option value="mark">Mark</option>
+                                    <option value="odd">Odd</option>
+                                    <option value="space">Space</option>
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            <table id="ser_operation">
+                <tr>
+                    <td>
+                        <input type="button" id="serial_open_close"
+                               class="btn btn-primary btn-sm center-block" value="打开串口"
+                               onclick="bnt_change(this)"/>
+                    </td>
+                    <td>
+                        <div id="serial_status">
+                            <img id="serial_status_image" src="../image/serial_stop.png"
+                                 style="width: 30px;
+                            height: 30px;"/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="show_message">
+            <div class="nav">接收数据窗口</div>
+            <div class="show_set">
+                <div id="clear_set">
+                    <input type="button" id="clear" class="btn btn-success btn-xs center-block" value="清除窗口"
+                           onclick="clear_window()"/>
+                </div>
+            </div>
+        </div>
+        <div id="message"></div>
+        <div id="send">
+            <table class="table table-bordered">
+                <tr>
+                    <th>
+                        <div class="input-group">
+                            <span class="input-group-addon">发送指令：</span>
+                            <input type="text" id="command" class="form-control"/>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <div id="auto_send_form">
+
+                                        <div class="input-group ">
+                                            <span class="input-group-addon">定时发送：</span>
+                                            <select class="form-control" id="auto_send">
+                                                <option value="auto_send_no">否</option>
+                                                <option value="auto_send_yes">是</option>
+                                            </select>
+                                        </div>
+                        </div>
+                    </th>
+                </tr>
+
+                <tr>
+                <th>
+                    <div class="input-group">
+                        <span class="input-group-addon">间隔时间：</span>
+                        <input type="number" id="auto_time" class="form-control"
+                               placeholder="ms"/>
+                    </div>
+                </th>
+            </tr>
+                <div id="button">
+                    <button id="btn_start" class="btn btn-danger center-block">发送</button>
+                </div>
+            </table>
+
+        </div>
+
+        <div id="ser_setting">
+                <div class="nav">接收发送设置</div>
+
+            <table id="setting" class="table table-bordered">
+                <tr>
+                    <th>
+                        <div class="input-group">
+                            <span class="input-group-addon">接收设置</span>
+                            <select class="form-control" id="rec_setting">
+                                <option value="hex">HEX</option>
+                                <option value="ascii">ASCII</option>
+                                <option value="gb2312" selected>GB2312</option>
+                            </select>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <div class="input-group">
+                            <span class="input-group-addon">发送设置</span>
+                            <select class="form-control" id="send_setting">
+                                <option value="hex">HEX</option>
+                                <option value="ascii">ASCII</option>
+                                <option value="utf8">UTF8</option>
+                            </select>
+                        </div>
+                    </th>
+                </tr>
+                    <button id="set_change" class="btn btn-primary center-block">确认更改</button>
+
+            </table>
+        </div>
+    </div>
+</div>
+    <div id="copyright">
+        <p class="copyright text-muted text-center normal">Created By 卜先彦，Email：buxy_0210@163.com</p>
+    </div>
+</div>
+</body>
+</html>
