@@ -1,33 +1,35 @@
-# »ùÓÚNode.jsµÄ´®¿Úµ÷ÊÔÖúÊÖ
-**ËµÃ÷**£º¸Ã³ÌĞòÍ¨¹ınode.js·½·¨ÊµÏÖ¶Ô´®¿Ú½øĞĞ¶ÁĞ´¡£½øĞĞnode.jsµÄ´®¿Ú³ÌĞò¿ª·¢£¬±ØĞë°²×°node.jsÏÂµÄ´®¿Ú¿ª·¢¿Ø¼ş¡®serialport¡¯¡£
-**°²×°**£º `npm install serialport`
-    ![´®¿Úµ÷ÊÔÖúÊÖ½çÃæ](/2015-10-09_114116.png)
+# åŸºäºNode.jsçš„ä¸²å£è°ƒè¯•åŠ©æ‰‹
+**è¯´æ˜**ï¼šè¯¥ç¨‹åºé€šè¿‡node.jsæ–¹æ³•å®ç°å¯¹ä¸²å£è¿›è¡Œè¯»å†™ã€‚è¿›è¡Œnode.jsçš„ä¸²å£ç¨‹åºå¼€å‘ï¼Œå¿…é¡»å®‰è£…node.jsä¸‹çš„ä¸²å£å¼€å‘æ§ä»¶â€˜serialportâ€™ã€‚
+**å®‰è£…**ï¼š `npm install serialport`
+    ![ä¸²å£è°ƒè¯•åŠ©æ‰‹ç•Œé¢](/2015-10-09_114116.png)
 ***
-## 1.´´½¨´®¿Ú
+## 1.åˆ›å»ºä¸²å£
+```javascript
     function open_serial() {
          var serialPort = new SerialPort.SerialPort(com_num, {
-             baudrate: baudrate,  //²¨ÌØÂÊÉèÖÃ
-             databits: databits,  //Êı¾İÎ»
-             parity: parity,  //Ğ£ÑéÎ»
-             stopbits: stopbits //Í£Ö¹Î»
-             //  parser: SerialPort.parsers.readline("\n")  //Õâ¾ä¿ÉÄÜµ÷ÓÃ·½·¨²»¶Ô£¬¼ÓÉÏÕâ¾ä¾Í»á³öÏÖ½ÓÊÕÊı¾İ±àÂë²»Õı³£
+             baudrate: baudrate,  //æ³¢ç‰¹ç‡è®¾ç½®
+             databits: databits,  //æ•°æ®ä½
+             parity: parity,  //æ ¡éªŒä½
+             stopbits: stopbits //åœæ­¢ä½
+             //  parser: SerialPort.parsers.readline("\n")  //è¿™å¥å¯èƒ½è°ƒç”¨æ–¹æ³•ä¸å¯¹ï¼ŒåŠ ä¸Šè¿™å¥å°±ä¼šå‡ºç°æ¥æ”¶æ•°æ®ç¼–ç ä¸æ­£å¸¸
          });
-         data_to_web('´®¿ÚÒÑ¾­´ò¿ª');
+         data_to_web('ä¸²å£å·²ç»æ‰“å¼€');
          sp = serialPort;
     }
-  **ËµÃ÷**£ºÍ¨¹ı¸Ã·½·¨´´½¨´®¿Ú¡£×¢Òâ´´½¨´°¿ÚµÄÊ±ºò´®¿ÚºÅÊÇ±ØÒªÌõ¼ş£¬·ñÔò¾Í»á±¨´í£¬ÎŞ·¨´´½¨¶Ë¿Ú¡£
+    ```
+  **è¯´æ˜**ï¼šé€šè¿‡è¯¥æ–¹æ³•åˆ›å»ºä¸²å£ã€‚æ³¨æ„åˆ›å»ºçª—å£çš„æ—¶å€™ä¸²å£å·æ˜¯å¿…è¦æ¡ä»¶ï¼Œå¦åˆ™å°±ä¼šæŠ¥é”™ï¼Œæ— æ³•åˆ›å»ºç«¯å£ã€‚
 ***
-## 2.¶Á¶Ë¿ÚÊı¾İ
+## 2.è¯»ç«¯å£æ•°æ®
          function serial_read() {
                sp.on('data', function (info) {
                console.log('data_change:' + iconv.decode(info, rec_setting));
                data_to_web(iconv.decode(info, rec_setting));
-               data_to_web('½ÓÊÕÊı¾İ×Ö½Ú³¤¶È£º' + info.length);
+               data_to_web('æ¥æ”¶æ•°æ®å­—èŠ‚é•¿åº¦ï¼š' + info.length);
            });
            }
-**ËµÃ÷**£ºÍ¨¹ı¸Ã·½·¨¶ÁÈ¡´®¿ÚÊı¾İ¡£
+**è¯´æ˜**ï¼šé€šè¿‡è¯¥æ–¹æ³•è¯»å–ä¸²å£æ•°æ®ã€‚
 ***
-## 3.Ğ´¶Ë¿ÚÊı¾İ
+## 3.å†™ç«¯å£æ•°æ®
     function serial_write() {
          var buf_once = new Buffer(write_data, send_setting);
          sp.write(buf_once, function (err, results) {
@@ -35,10 +37,10 @@
                  console.log('err ' + err);
              }
              else {
-                 data_to_web('·¢ËÍÊı¾İ£º' + write_data.toLocaleUpperCase());
-                 data_to_web('·¢ËÍÊı¾İ×Ö½Ú³¤¶È£º ' + results);
-                 console.log('·¢ËÍÊı¾İ:' + write_data.toLocaleUpperCase());
-                 console.log('·¢ËÍÊı¾İ×Ö½Ú³¤¶È£º ' + results);  //·¢³öÈ¥µÄÊı¾İ×Ö½Ú³¤¶È
+                 data_to_web('å‘é€æ•°æ®ï¼š' + write_data.toLocaleUpperCase());
+                 data_to_web('å‘é€æ•°æ®å­—èŠ‚é•¿åº¦ï¼š ' + results);
+                 console.log('å‘é€æ•°æ®:' + write_data.toLocaleUpperCase());
+                 console.log('å‘é€æ•°æ®å­—èŠ‚é•¿åº¦ï¼š ' + results);  //å‘å‡ºå»çš„æ•°æ®å­—èŠ‚é•¿åº¦
              }
          });
          if (auto_send_time != 0) {
@@ -50,10 +52,10 @@
                              console.log('err ' + err);
                          }
                          else {
-                             data_to_web('·¢ËÍÊı¾İ£º' + write_data.toLocaleUpperCase());
-                             data_to_web('·¢ËÍÊı¾İ×Ö½Ú³¤¶È£º ' + results);
-                             console.log('·¢ËÍÊı¾İ:' + write_data.toLocaleUpperCase());
-                             console.log('·¢ËÍÊı¾İ×Ö½Ú³¤¶È£º ' + results);  //·¢³öÈ¥µÄÊı¾İ×Ö½Ú³¤¶È
+                             data_to_web('å‘é€æ•°æ®ï¼š' + write_data.toLocaleUpperCase());
+                             data_to_web('å‘é€æ•°æ®å­—èŠ‚é•¿åº¦ï¼š ' + results);
+                             console.log('å‘é€æ•°æ®:' + write_data.toLocaleUpperCase());
+                             console.log('å‘é€æ•°æ®å­—èŠ‚é•¿åº¦ï¼š ' + results);  //å‘å‡ºå»çš„æ•°æ®å­—èŠ‚é•¿åº¦
                          }
                      })
                  }
@@ -63,37 +65,37 @@
              }, auto_send_time);
          }
      }
-**ËµÃ÷**£ºÍ¨¹ı¸Ã·½·¨Ïò´®¿ÚĞ´ÈëÊı¾İ¡£ÒòÎªÔÚÊµ¼Ê´®¿Úµ÷ÊÔÖĞ´æÔÚµ¥´Î·¢ËÍºÍ¶¨Ê±Á¬Ğø·¢Éú£¬ËùÒÔÕâÀïÒ²¶ÔÕâÁ½ÖÖÇé¿ö×öÁËÇø·Ö¡£µ±È»£¬µ±ÎÒÃÇµãÏÂ·¢ËÍ°´Å¥µÄÊ±ºò£¬±ØĞëÁ¢ÂíÓĞÒ»ÌõÊı¾İ·¢³ö£¬ËùÒÔÈçÕâ¸ö·½·¨ÀïÃæµÄ´úÂëËùÊ¾£¬µ÷ÓÃ¸Ã·½·¨µÄÊ±ºòÎÒÊ×ÏÈ»áÏÈ·¢ËÍÒ»´ÎÊı¾İ¡£ÕâÑù×öµÄºÃ´¦ÊÇ±ÜÃâÑÓÊ±ÏÖÏó£¬±ÈÈçÎÒÒª¼ä¸ô2s¶¨Ê±·¢ËÍÊı¾İ£¬ÄÇÃ´µ±·¢ËÍ°´Å¥µã»÷Íê³É£¬2sºó²Å»á¿ªÊ¼·¢ËÍÊı¾İ¡£
+**è¯´æ˜**ï¼šé€šè¿‡è¯¥æ–¹æ³•å‘ä¸²å£å†™å…¥æ•°æ®ã€‚å› ä¸ºåœ¨å®é™…ä¸²å£è°ƒè¯•ä¸­å­˜åœ¨å•æ¬¡å‘é€å’Œå®šæ—¶è¿ç»­å‘ç”Ÿï¼Œæ‰€ä»¥è¿™é‡Œä¹Ÿå¯¹è¿™ä¸¤ç§æƒ…å†µåšäº†åŒºåˆ†ã€‚å½“ç„¶ï¼Œå½“æˆ‘ä»¬ç‚¹ä¸‹å‘é€æŒ‰é’®çš„æ—¶å€™ï¼Œå¿…é¡»ç«‹é©¬æœ‰ä¸€æ¡æ•°æ®å‘å‡ºï¼Œæ‰€ä»¥å¦‚è¿™ä¸ªæ–¹æ³•é‡Œé¢çš„ä»£ç æ‰€ç¤ºï¼Œè°ƒç”¨è¯¥æ–¹æ³•çš„æ—¶å€™æˆ‘é¦–å…ˆä¼šå…ˆå‘é€ä¸€æ¬¡æ•°æ®ã€‚è¿™æ ·åšçš„å¥½å¤„æ˜¯é¿å…å»¶æ—¶ç°è±¡ï¼Œæ¯”å¦‚æˆ‘è¦é—´éš”2så®šæ—¶å‘é€æ•°æ®ï¼Œé‚£ä¹ˆå½“å‘é€æŒ‰é’®ç‚¹å‡»å®Œæˆï¼Œ2såæ‰ä¼šå¼€å§‹å‘é€æ•°æ®ã€‚
 ***
-## 4.Êı¾İ·¢ËÍ·½Ê½ÅĞ¶Ï
+## 4.æ•°æ®å‘é€æ–¹å¼åˆ¤æ–­
     function send_juge() {
 
-     //ÃüÁîÊÖ¶¯·¢ËÍÌõ¼ş
-     if (command != "" && auto_send == "auto_send_no") //·¢ËÍÃüÁîÊÖ¶¯³­±í
+     //å‘½ä»¤æ‰‹åŠ¨å‘é€æ¡ä»¶
+     if (command != "" && auto_send == "auto_send_no") //å‘é€å‘½ä»¤æ‰‹åŠ¨æŠ„è¡¨
      {
          serial_read_write(command, 0);
      }
-     //ÃüÁî×Ô¶¯·¢ËÍ
-     if (command != "" && auto_send == "auto_send_yes") //¶¨Ê±×Ô¶¯³­±í
+     //å‘½ä»¤è‡ªåŠ¨å‘é€
+     if (command != "" && auto_send == "auto_send_yes") //å®šæ—¶è‡ªåŠ¨æŠ„è¡¨
      {
          serial_read_write(command, auto_time);
      }
     }
  ***
- ## 5.ÆäËû
- ÕâÀïÃæ»¹ÓĞÆäËüµÄ·½·¨ºÍÂß¼­ÅĞ¶Ï£¬ÕâÀï²»Ò»Ò»Ï¸Ëµ£¬ÔÚ³ÌĞòÀïÃæ¶¼ÓĞÏàÓ¦µÄ×¢ÊÍ¡£ÔÚweb¶ËÔËÓÃÁË¶à¸öajaxÍÆËÍÒ³ÃæĞÅÏ¢µ½ºóÌ¨·şÎñµÄÊÂ¼ş£¬ÕâÀïÖ»¸ø³öÒ»¸öÊ¾ÀıËµÃ÷£º
+ ## 5.å…¶ä»–
+ è¿™é‡Œé¢è¿˜æœ‰å…¶å®ƒçš„æ–¹æ³•å’Œé€»è¾‘åˆ¤æ–­ï¼Œè¿™é‡Œä¸ä¸€ä¸€ç»†è¯´ï¼Œåœ¨ç¨‹åºé‡Œé¢éƒ½æœ‰ç›¸åº”çš„æ³¨é‡Šã€‚åœ¨webç«¯è¿ç”¨äº†å¤šä¸ªajaxæ¨é€é¡µé¢ä¿¡æ¯åˆ°åå°æœåŠ¡çš„äº‹ä»¶ï¼Œè¿™é‡Œåªç»™å‡ºä¸€ä¸ªç¤ºä¾‹è¯´æ˜ï¼š
  
     $(function()
           {
               $('#set_change').click(function()
               {
-                  rec_setting = $("#rec_setting").find('option:selected').val();//»ñÈ¡½ÓÊÕ±àÂë
-                  send_setting = $("#send_setting").find('option:selected').val();//»ñÈ¡·¢ËÍ±àÂë
+                  rec_setting = $("#rec_setting").find('option:selected').val();//è·å–æ¥æ”¶ç¼–ç 
+                  send_setting = $("#send_setting").find('option:selected').val();//è·å–å‘é€ç¼–ç 
                   var encode_set = {
                       rec_setting: rec_setting,
                       send_setting: send_setting
                   };
-                  var JSON_encode = JSON.stringify(encode_set);  //½«js¶ÔÏó×ª»»³Éjson¸ñÊ½Êı¾İ
+                  var JSON_encode = JSON.stringify(encode_set);  //å°†jså¯¹è±¡è½¬æ¢æˆjsonæ ¼å¼æ•°æ®
                   $.ajax({
                       type: 'post',
                       url: "command_1.1.html",
@@ -105,10 +107,10 @@
                       },
                       error: function (XMLHttpRequest, textStatus, errorThrown) {
                           // alert("Save error!" + XMLHttpRequest.status + " "  + XMLHttpRequest.readyState);
-                          alert("Ö¸Áî·¢ËÍÊ§°Ü£¬Çë¼ì²é·şÎñÆ÷ÊÇ·ñÔËĞĞÕı³££¡")
+                          alert("æŒ‡ä»¤å‘é€å¤±è´¥ï¼Œè¯·æ£€æŸ¥æœåŠ¡å™¨æ˜¯å¦è¿è¡Œæ­£å¸¸ï¼")
                       }
                   });
                   connect_toserver.emit('encode_setting', encode_set);
               })
           });
-**ËµÃ÷**£ºÕâ¸ö·½·¨ÊÇÍÆËÍ±àÂëÉèÖÃµ½ºóÌ¨³ÌĞò¡£
+**è¯´æ˜**ï¼šè¿™ä¸ªæ–¹æ³•æ˜¯æ¨é€ç¼–ç è®¾ç½®åˆ°åå°ç¨‹åºã€‚
