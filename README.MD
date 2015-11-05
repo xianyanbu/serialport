@@ -16,10 +16,11 @@
          data_to_web('串口已经打开');
          sp = serialPort;
     }
-    ```
-  **说明**：通过该方法创建串口。注意创建窗口的时候串口号是必要条件，否则就会报错，无法创建端口。
+```
+**说明**：通过该方法创建串口。注意创建窗口的时候串口号是必要条件，否则就会报错，无法创建端口。
 ***
 ## 2.读端口数据
+```javascript
          function serial_read() {
                sp.on('data', function (info) {
                console.log('data_change:' + iconv.decode(info, rec_setting));
@@ -27,9 +28,11 @@
                data_to_web('接收数据字节长度：' + info.length);
            });
            }
+```
 **说明**：通过该方法读取串口数据。
 ***
 ## 3.写端口数据
+```javascript
     function serial_write() {
          var buf_once = new Buffer(write_data, send_setting);
          sp.write(buf_once, function (err, results) {
@@ -65,9 +68,12 @@
              }, auto_send_time);
          }
      }
+```language
+```
 **说明**：通过该方法向串口写入数据。因为在实际串口调试中存在单次发送和定时连续发生，所以这里也对这两种情况做了区分。当然，当我们点下发送按钮的时候，必须立马有一条数据发出，所以如这个方法里面的代码所示，调用该方法的时候我首先会先发送一次数据。这样做的好处是避免延时现象，比如我要间隔2s定时发送数据，那么当发送按钮点击完成，2s后才会开始发送数据。
 ***
 ## 4.数据发送方式判断
+```javascript
     function send_juge() {
 
      //命令手动发送条件
@@ -81,10 +87,11 @@
          serial_read_write(command, auto_time);
      }
     }
+```
  ***
  ## 5.其他
  这里面还有其它的方法和逻辑判断，这里不一一细说，在程序里面都有相应的注释。在web端运用了多个ajax推送页面信息到后台服务的事件，这里只给出一个示例说明：
- 
+```javascript
     $(function()
           {
               $('#set_change').click(function()
@@ -113,4 +120,5 @@
                   connect_toserver.emit('encode_setting', encode_set);
               })
           });
+```
 **说明**：这个方法是推送编码设置到后台程序。
